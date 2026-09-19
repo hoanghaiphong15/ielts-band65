@@ -1,4 +1,6 @@
 const CANDIDATE_MODELS = [
+  'gemini-3.6-flash',
+  'gemini-3.6-pro',
   'gemini-2.5-flash',
   'gemini-2.0-flash',
   'gemini-1.5-flash',
@@ -15,7 +17,7 @@ let cachedResolution: {
 
 /**
  * Dynamically resolves the best active Gemini model and API version for the provided API key.
- * This prevents 404/outdated model errors when Google updates or deprecates models.
+ * Defaults to gemini-3.6-flash on stable v1 endpoint.
  */
 export async function resolveGeminiEndpoint(apiKey: string): Promise<{
   url: string;
@@ -52,7 +54,7 @@ export async function resolveGeminiEndpoint(apiKey: string): Promise<{
           m.supportedGenerationMethods?.includes('generateContent')
         );
 
-        // 1. Match against preferred candidates
+        // 1. Match against preferred candidates (gemini-3.6-flash prioritized)
         for (const candidate of CANDIDATE_MODELS) {
           const match = supported.find(
             (m) => m.name === `models/${candidate}` || m.name.endsWith(candidate)
@@ -72,7 +74,23 @@ export async function resolveGeminiEndpoint(apiKey: string): Promise<{
           }
         }
 
-        // 2. Find any flash model
+        // 2. Find any 3.6 or flash model
+        const v36Model = supported.find((m) => m.name.includes('3.6'));
+        if (v36Model) {
+          const name = v36Model.name.replace(/^models\//, '');
+          cachedResolution = {
+            key: cleanKey,
+            model: name,
+            apiVersion: version,
+            timestamp: now,
+          };
+          return {
+            url: `https://generativelanguage.googleapis.com/${version}/models/${name}:generateContent?key=${cleanKey}`,
+            model: name,
+            apiVersion: version,
+          };
+        }
+
         const flashModel = supported.find((m) => m.name.includes('flash'));
         if (flashModel) {
           const name = flashModel.name.replace(/^models\//, '');
@@ -110,10 +128,10 @@ export async function resolveGeminiEndpoint(apiKey: string): Promise<{
     }
   }
 
-  // Default fallback if query fails (uses stable v1 endpoint)
+  // Default fallback: gemini-3.6-flash on stable v1
   return {
-    url: `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${cleanKey}`,
-    model: 'gemini-2.5-flash',
+    url: `https://generativelanguage.googleapis.com/v1/models/gemini-3.6-flash:generateContent?key=${cleanKey}`,
+    model: 'gemini-3.6-flash',
     apiVersion: 'v1',
   };
 }

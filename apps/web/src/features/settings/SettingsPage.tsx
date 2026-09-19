@@ -301,7 +301,7 @@ export const SettingsPage: React.FC = () => {
               <Sparkles className="w-4 h-4" />
             </div>
             <h3 className="text-lg font-black text-slate-900 dark:text-white">
-              {language === 'vi' ? 'Google Gemini AI (Tùy chọn - Miễn phí 100%)' : 'Google Gemini AI (Optional - 100% Free)'}
+              {language === 'vi' ? 'Google Gemini 3.6 AI (Tùy chọn - Miễn phí 100%)' : 'Google Gemini 3.6 AI (Optional - 100% Free)'}
             </h3>
           </div>
           <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
@@ -311,8 +311,8 @@ export const SettingsPage: React.FC = () => {
 
         <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
           {language === 'vi'
-            ? 'Tích hợp Gemini 1.5/2.0 Flash để chấm bài Writing & Speaking chi tiết từng câu như giám khảo bản xứ. Hoàn toàn miễn phí từ Google AI Studio. Nếu không nhập key, hệ thống sẽ tự động dùng bộ chấm điểm Heuristic có sẵn.'
-            : 'Integrate Gemini 1.5/2.0 Flash for examiner-level feedback, native rewrites, and band analysis. Free tier provided by Google AI Studio. If left empty, the built-in heuristic evaluator will be used.'}
+            ? 'Tích hợp Gemini 3.6 Flash để chấm bài Writing & Speaking chi tiết từng câu như giám khảo bản xứ. Hoàn toàn miễn phí từ Google AI Studio. Nếu không nhập key, hệ thống sẽ tự động dùng bộ chấm điểm Heuristic có sẵn.'
+            : 'Integrate Gemini 3.6 Flash for examiner-level feedback, native rewrites, and band analysis. Free tier provided by Google AI Studio. If left empty, the built-in heuristic evaluator will be used.'}
         </p>
 
         <form onSubmit={handleSaveApiKey} className="space-y-3 pt-1">
@@ -378,7 +378,7 @@ export const SettingsPage: React.FC = () => {
               </span>
             ) : (
               <span className="text-[11px] text-slate-500">
-                {geminiApiKey ? (language === 'vi' ? '✓ Đang bật chế độ Gemini AI' : '✓ Gemini AI enabled') : (language === 'vi' ? 'Đang dùng bộ chấm điểm cục bộ' : 'Using offline evaluator')}
+                {geminiApiKey ? (language === 'vi' ? '✓ Đang bật chế độ Gemini 3.6 AI' : '✓ Gemini 3.6 AI enabled') : (language === 'vi' ? 'Đang dùng bộ chấm điểm cục bộ' : 'Using offline evaluator')}
               </span>
             )}
 
