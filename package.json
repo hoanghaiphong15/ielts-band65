@@ -1,0 +1,30 @@
+{
+  "name": "ielts-band65-trainer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local-First IELTS Band 6.5+ Training Web App for Vietnamese Learners",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces --parallel --if-present",
+    "dev:api": "npm run dev --workspace=@ielts/api",
+    "dev:web": "npm run dev --workspace=@ielts/web",
+    "build": "npm run build --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace=@ielts/api",
+    "db:push": "npm run db:push --workspace=@ielts/api",
+    "db:seed": "npm run db:seed --workspace=@ielts/api"
+  },
+  "keywords": [
+    "ielts",
+    "vietnamese",
+    "band-6.5",
+    "pwa",
+    "local-first",
+    "education"
+  ],
+  "author": "",
+  "license": "MIT"
+}
