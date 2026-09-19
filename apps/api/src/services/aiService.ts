@@ -6,6 +6,7 @@ import {
 } from '@ielts/shared';
 import { evaluateWriting } from './writingEvaluator';
 import { evaluateSpeaking } from './speakingEvaluator';
+import { resolveGeminiEndpoint } from './geminiResolver';
 
 export interface ExplanationResult {
   explanationEn: string;
@@ -103,8 +104,9 @@ export class GeminiAIService implements AIService {
     }
 
     try {
+      const endpoint = await resolveGeminiEndpoint(key);
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        endpoint.url,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -226,8 +228,9 @@ Return STRICTLY a JSON object with this exact schema (no markdown, no backticks,
     }
 
     try {
+      const endpoint = await resolveGeminiEndpoint(key);
       const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+        endpoint.url,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

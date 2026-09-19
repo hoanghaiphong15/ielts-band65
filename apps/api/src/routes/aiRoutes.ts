@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { resolveGeminiEndpoint } from '../services/geminiResolver';
 
 const router = Router();
 
@@ -19,28 +20,28 @@ router.post('/test', async (req, res) => {
 
     const cleanKey = apiKey.trim();
 
+    // Dynamically resolve active model and endpoint
+    const endpoint = await resolveGeminiEndpoint(cleanKey);
+
     // Call Gemini API with a lightweight test request
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${cleanKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: 'Respond with exactly the word "CONNECTED" to verify API connection.',
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            maxOutputTokens: 10,
+    const response = await fetch(endpoint.url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: 'Respond with exactly the word "CONNECTED" to verify API connection.',
+              },
+            ],
           },
-        }),
-      }
-    );
+        ],
+        generationConfig: {
+          maxOutputTokens: 10,
+        },
+      }),
+    });
 
     if (!response.ok) {
       const errData: any = await response.json().catch(() => ({}));
@@ -59,8 +60,8 @@ router.post('/test', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'Kết nối Google Gemini 1.5 Flash thành công! AI đã sẵn sàng hoạt động.',
-      model: 'gemini-1.5-flash',
+      message: `Kết nối Google Gemini thành công! Đang sử dụng mô hình ${endpoint.model} (${endpoint.apiVersion}).`,
+      model: endpoint.model,
       response: reply,
     });
   } catch (err: any) {
@@ -68,7 +69,8 @@ router.post('/test', async (req, res) => {
     return res.status(500).json({
       success: false,
       error:
-        err.message || 'Không thể kết nối đến máy chủ Google AI. Vui lòng kiểm tra lại đường truyền mạng.',
+        err.message ||
+        'Không thể kết nối đến máy chủ Google AI. Vui lòng kiểm tra lại đường truyền mạng.',
     });
   }
 });
