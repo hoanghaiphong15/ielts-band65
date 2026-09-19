@@ -16,6 +16,9 @@ import {
   Sparkles,
   Key,
   ExternalLink,
+  Zap,
+  Loader2,
+  XCircle,
 } from 'lucide-react';
 
 export const SettingsPage: React.FC = () => {
@@ -31,6 +34,35 @@ export const SettingsPage: React.FC = () => {
     () => localStorage.getItem('gemini-api-key') || ''
   );
   const [apiKeySaved, setApiKeySaved] = useState<boolean>(false);
+  const [isTestingKey, setIsTestingKey] = useState<boolean>(false);
+  const [testStatus, setTestStatus] = useState<{ success: boolean; message: string } | null>(null);
+
+  const handleTestApiKey = async () => {
+    if (!geminiApiKey.trim()) {
+      setTestStatus({
+        success: false,
+        message: language === 'vi' ? 'Vui lòng nhập API Key trước khi kiểm tra.' : 'Please enter an API Key first.',
+      });
+      return;
+    }
+    setIsTestingKey(true);
+    setTestStatus(null);
+    try {
+      const res = await api.testGeminiKey(geminiApiKey.trim());
+      if (res.success) {
+        setTestStatus({ success: true, message: res.message });
+      } else {
+        setTestStatus({ success: false, message: res.error || 'Kiểm tra thất bại.' });
+      }
+    } catch (err: any) {
+      setTestStatus({
+        success: false,
+        message: err.message || (language === 'vi' ? 'Lỗi kết nối khi kiểm tra.' : 'Connection error during test.'),
+      });
+    } finally {
+      setIsTestingKey(false);
+    }
+  };
 
   const handleSaveApiKey = (e: React.FormEvent) => {
     e.preventDefault();
@@ -309,7 +341,36 @@ export const SettingsPage: React.FC = () => {
             />
           </div>
 
-          <div className="flex items-center justify-between pt-1">
+          {/* Test Status Banner */}
+          {testStatus && (
+            <div
+              className={`p-3 rounded-xl border text-xs font-medium flex items-start gap-2.5 transition-all ${
+                testStatus.success
+                  ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300'
+                  : 'bg-rose-50 dark:bg-rose-950/40 border-rose-200 dark:border-rose-800 text-rose-800 dark:text-rose-300'
+              }`}
+            >
+              {testStatus.success ? (
+                <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+              ) : (
+                <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              )}
+              <div className="flex-1 leading-relaxed">
+                <span className="font-bold block mb-0.5">
+                  {testStatus.success
+                    ? language === 'vi'
+                      ? 'Kết nối thành công!'
+                      : 'Connection Successful!'
+                    : language === 'vi'
+                    ? 'Kết nối thất bại'
+                    : 'Connection Failed'}
+                </span>
+                <span>{testStatus.message}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
             {apiKeySaved ? (
               <span className="text-xs font-bold text-emerald-600 flex items-center gap-1.5 animate-fade-in">
                 <CheckCircle2 className="w-4 h-4" />
@@ -321,13 +382,34 @@ export const SettingsPage: React.FC = () => {
               </span>
             )}
 
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-2 min-h-touch"
-            >
-              <Save className="w-4 h-4" />
-              <span>{language === 'vi' ? 'Lưu API Key' : 'Save API Key'}</span>
-            </button>
+            <div className="flex items-center gap-2 ml-auto">
+              <button
+                type="button"
+                onClick={handleTestApiKey}
+                disabled={isTestingKey}
+                className="px-4 py-2.5 rounded-xl border border-purple-200 dark:border-purple-800 hover:bg-purple-50 dark:hover:bg-purple-950/50 text-purple-700 dark:text-purple-300 font-bold text-xs transition-all flex items-center gap-1.5 min-h-touch disabled:opacity-50"
+              >
+                {isTestingKey ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>{language === 'vi' ? 'Đang kiểm tra...' : 'Testing...'}</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5 text-amber-500" />
+                    <span>{language === 'vi' ? 'Kiểm tra kết nối' : 'Test API Key'}</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md transition-transform active:scale-95 flex items-center gap-2 min-h-touch"
+              >
+                <Save className="w-4 h-4" />
+                <span>{language === 'vi' ? 'Lưu API Key' : 'Save API Key'}</span>
+              </button>
+            </div>
           </div>
         </form>
       </div>

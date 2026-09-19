@@ -179,4 +179,16 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(backupData),
     }),
+
+  // AI
+  testGeminiKey: (apiKey?: string) =>
+    fetchJson<{
+      success: boolean;
+      message: string;
+      error?: string;
+      model?: string;
+    }>('/ai/test', {
+      method: 'POST',
+      body: JSON.stringify({ apiKey }),
+    }),
 };

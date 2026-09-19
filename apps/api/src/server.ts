@@ -12,6 +12,7 @@ import mockTestRoutes from './routes/mockTestRoutes';
 import studyPlanRoutes from './routes/studyPlanRoutes';
 import analyticsRoutes from './routes/analyticsRoutes';
 import backupRoutes from './routes/backupRoutes';
+import aiRoutes from './routes/aiRoutes';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -39,6 +40,7 @@ app.use('/api/mock-test', mockTestRoutes);
 app.use('/api/study-plan', studyPlanRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/backup', backupRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Error handler
 app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
